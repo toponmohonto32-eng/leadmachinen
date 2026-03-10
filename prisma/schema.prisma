@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -21,12 +18,107 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
-model Post {
-  id        String   @id @default(cuid())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// Search tracking
+model Search {
+  id           String   @id @default(cuid())
+  query        String
+  postalCode   String?
+  city         String?
+  county       String?
+  niche        String?
+  status       String   @default("pending") // pending, running, completed, failed
+  resultsCount Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  leads        Lead[]
+}
+
+// Business lead information
+model Lead {
+  id                String    @id @default(cuid())
+  searchId          String?
+  search            Search?   @relation(fields: [searchId], references: [id])
+  name              String
+  website           String?
+  email             String?
+  phone             String?
+  address           String?
+  city              String?
+  state             String?
+  postalCode        String?
+  county            String?
+  country           String?
+  niche             String?
+  hasWebsite        Boolean   @default(false)
+  rating            Float?
+  reviewCount       Int       @default(0)
+  latitude          Float?
+  longitude         Float?
+  placeId           String?   @unique
+  businessStatus    String?   // OPERATIONAL, CLOSED_TEMPORARILY, CLOSED_PERMANENTLY
+  openingHours      String?   // JSON string
+  photos            String?   // JSON array string
+  socialFacebook    String?
+  socialTwitter     String?
+  socialLinkedIn    String?
+  socialInstagram   String?
+  socialYoutube     String?
+  description       String?
+  category          String?
+  rawGMBData        String?   // Full raw JSON from scraper
+  isEnriched        Boolean   @default(false) // If AI enrichment has been run
+
+  // Quality scoring and categorization
+  qualityScore      Float?    @default(0) // 0-100, calculated by AI
+  qualityFactors    String?   // JSON with score breakdown
+  tags              String?   // JSON array of tags
+  notes             String?   // User notes
+  status            String?   @default("new") // new, contacted, qualified, converted, lost
+  priority          String?   @default("medium") // low, medium, high, urgent
+  duplicateOf       String?   // If this is a duplicate, reference the original lead ID
+  isDuplicate       Boolean   @default(false)
+  emailValid        Boolean?  // Email validation status
+  emailDeliverable  Boolean?  // Email deliverability check
+  lastContactedAt   DateTime?
+  nextFollowUpAt    DateTime?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  reviews           Review[]
+  contacts          Contact[]
+}
+
+// Review data from Google My Business
+model Review {
+  id          String   @id @default(cuid())
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  reviewerName String?
+  reviewerEmail String?
+  reviewerProfileUrl String?
+  rating      Int
+  text        String?
+  date        DateTime?
+  reviewId    String?  @unique // Google's review ID
+  rawReviewData String? // Full raw JSON
+  createdAt   DateTime @default(now())
+}
+
+// Top management/owner contacts (found via AI)
+model Contact {
+  id          String   @id @default(cuid())
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  name        String
+  role        String?  // CEO, Owner, Manager, etc.
+  email       String?
+  phone       String?
+  linkedIn    String?
+  facebook    String?
+  twitter     String?
+  confidence  Float?   // AI confidence score 0-1
+  source      String?  // Where this contact was found
+  rawContactData String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
