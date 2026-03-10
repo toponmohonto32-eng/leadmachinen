@@ -8,10 +8,10 @@ import { multiProviderAI } from '@/lib/ai-providers';
  */
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const leadId = params.id;
+    const { id: leadId } = await params;
 
     // Fetch the lead
     const lead = await db.lead.findUnique({
@@ -33,7 +33,7 @@ export async function POST(
     const scoreResult = await multiProviderAI.calculateLeadQualityScore(lead);
 
     // Validate email if present
-    let emailValidation = null;
+    let emailValidation: { isValid: boolean; isDeliverable: boolean; confidence: number; details: string } | null = null;
     if (lead.email) {
       emailValidation = await multiProviderAI.validateEmail(lead.email);
     }

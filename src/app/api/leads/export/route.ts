@@ -14,7 +14,10 @@ export async function GET(request: NextRequest) {
     const county = searchParams.get('county');
     const niche = searchParams.get('niche');
     const searchId = searchParams.get('searchId');
-    const format = searchParams.get('format') || 'csv'; // csv, json
+    const format = searchParams.get('format') || 'csv'; // csv, json, excel
+    const status = searchParams.get('status');
+    const priority = searchParams.get('priority');
+    const minQualityScore = searchParams.get('minQualityScore');
 
     // Build where clause
     const where: any = {};
@@ -41,6 +44,18 @@ export async function GET(request: NextRequest) {
 
     if (searchId) {
       where.searchId = searchId;
+    }
+
+    if (status) {
+      where.status = status;
+    }
+
+    if (priority) {
+      where.priority = priority;
+    }
+
+    if (minQualityScore) {
+      where.qualityScore = { gte: parseFloat(minQualityScore) };
     }
 
     // Fetch leads

@@ -8,10 +8,10 @@ import { multiProviderAI } from '@/lib/ai-providers';
  */
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const leadId = params.id;
+    const { id: leadId } = await params;
 
     // Fetch the lead to check
     const lead = await db.lead.findUnique({
@@ -51,7 +51,7 @@ export async function POST(
     }
 
     // If duplicate found, also get the original lead details
-    let originalLead = null;
+    let originalLead: any = null;
     if (duplicateCheck.duplicateOf) {
       originalLead = await db.lead.findUnique({
         where: { id: duplicateCheck.duplicateOf },

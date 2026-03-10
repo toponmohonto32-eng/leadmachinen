@@ -53,7 +53,7 @@ export async function POST(request: Request) {
     // Update enriched leads in database
     const updates = enriched.map(async (lead) => {
       // Validate email if present
-      let emailValidation = null;
+      let emailValidation: { isValid: boolean; isDeliverable: boolean; confidence: number; details: string } | null = null;
       if (lead.email) {
         emailValidation = await multiProviderAI.validateEmail(lead.email);
       }
