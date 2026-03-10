@@ -49,3 +49,9 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# Database files
+db/*.db
+db/*.db-shm
+db/*.db-wal
+/prisma/migrations/
