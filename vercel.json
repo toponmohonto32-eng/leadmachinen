@@ -1,0 +1,23 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "regions": ["iad1"],
+  "env": {
+    "DATABASE_URL": "file:./db/custom.db",
+    "ZAI_API_KEY": "@zai_api_key"
+  },
+  "build": {
+    "env": {
+      "DATABASE_URL": "file:./db/custom.db"
+    }
+  },
+  "functions": {
+    "app/api/**/*.ts": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  }
+}

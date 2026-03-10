@@ -787,17 +787,17 @@ export default function Home() {
                               </div>
                             </TableCell>
                             <TableCell>
-                              {lead.qualityScore !== null ? (
+                              {lead.qualityScore !== null && lead.qualityScore !== undefined ? (
                                 <div className="flex items-center gap-2">
                                   <div className="text-lg font-bold" style={{
-                                    color: lead.qualityScore >= 70 ? '#ef4444' : 
-                                           lead.qualityScore >= 50 ? '#f97316' : '#3b82f6'
+                                    color: (lead.qualityScore ?? 0) >= 70 ? '#ef4444' : 
+                                           (lead.qualityScore ?? 0) >= 50 ? '#f97316' : '#3b82f6'
                                   }}>
                                     {lead.qualityScore.toFixed(0)}
                                   </div>
                                   <div className="w-12">
                                     <Progress 
-                                      value={lead.qualityScore} 
+                                      value={lead.qualityScore || 0} 
                                       className="h-2"
                                     />
                                   </div>

@@ -8,11 +8,13 @@ import { multiProviderAI } from '@/lib/ai-providers';
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: leadId } = await params;
+
     const lead = await db.lead.findUnique({
-      where: { id: params.id },
+      where: { id: leadId },
     });
 
     if (!lead) {
